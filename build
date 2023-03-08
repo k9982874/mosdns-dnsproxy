@@ -1,0 +1,22 @@
+#!/bin/sh
+
+rm -f ./mosdns-linux-amd64
+
+if [ -d "./mosdns" ]; then
+    git submodule update --init --recursive
+fi
+
+if [ -f "./mosdns/plugin/enabled_plugins.go.bak" ]; then
+    rm -f ./mosdns/plugin/enabled_plugins.go
+    mv ./mosdns/plugin/enabled_plugins.go.bak ./mosdns/plugin/enabled_plugins.go
+fi
+
+sed -i.bak '$a\
+import _ "github.com/IrineSistiana/mosdns/v5/plugin/executable/forward_dnsproxy"' ./mosdns/plugin/enabled_plugins.go
+
+mkdir -p ./mosdns/plugin/executable/forward_dnsproxy; \
+    cp ./forward_dnsproxy.go ./mosdns/plugin/executable/forward_dnsproxy/forward.go
+
+cd mosdns
+go get github.com/AdguardTeam/dnsproxy/upstream
+GOOS=linux GOARCH=amd64 go build -o ../mosdns-linux-amd64 main.go

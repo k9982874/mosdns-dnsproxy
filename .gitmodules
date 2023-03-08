@@ -1,0 +1,3 @@
+[submodule "mosdns"]
+	path = mosdns
+	url = https://github.com/IrineSistiana/mosdns.git
